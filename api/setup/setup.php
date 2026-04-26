@@ -4,10 +4,19 @@
  * This script helps configure the system for first-time use
  */
 
-// Check if setup is already completed
-if (file_exists(__DIR__ . '/../config/setup_complete.txt')) {
-    die('Setup has already been completed. Remove api/config/setup_complete.txt to run setup again.');
-}
+// Check if setup is already completed in Cloud Database
+require_once __DIR__ . '/../config/database.php';
+try {
+    $dbClass = new Database();
+    $db = $dbClass->getConnection();
+    if ($db) {
+        $stmt = $db->query("SHOW TABLES LIKE 'users'");
+        if ($stmt && $stmt->rowCount() > 0 && (!isset($_GET['step']) || $_GET['step'] == 1)) {
+            header("Location: /login.php");
+            exit;
+        }
+    }
+} catch (Exception $e) {}
 
 $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
 $error = '';
@@ -16,45 +25,16 @@ $success = '';
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     switch($step) {
-        case 1: // Database configuration
-            $host = $_POST['db_host'];
-            $name = $_POST['db_name'];
-            $username = $_POST['db_username'];
-            $password = $_POST['db_password'];
-            
-            // Test database connection
+        case 1: // Verify DB Connection instead of writing config
             try {
-                $pdo = new PDO("mysql:host=$host;dbname=$name", $username, $password);
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                
-                // Update database config
-                $config_content = "<?php
-class Database {
-    private \$host = \"$host\";
-    private \$db_name = \"$name\";
-    private \$username = \"$username\";
-    private \$password = \"$password\";
-    public \$conn;
-
-    public function getConnection() {
-        \$this->conn = null;
-        try {
-            \$this->conn = new PDO(\"mysql:host=\" . \$this->host . \";dbname=\" . \$this->db_name, \$this->username, \$this->password);
-            \$this->conn->exec(\"set names utf8\");
-            \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException \$exception) {
-            echo \"Connection error: \" . \$exception->getMessage();
-        }
-        return \$this->conn;
-    }
-}
-?>";
-                
-                file_put_contents(__DIR__ . '/../config/database.php', $config_content);
-                $success = 'Database configuration saved successfully!';
-                $step = 2;
-                
-            } catch (PDOException $e) {
+                // Ensure db is available
+                if (isset($db) && $db !== null) {
+                    $success = 'Serverless Database configuration loaded from Environment Variables and verified!';
+                    $step = 2;
+                } else {
+                    $error = 'Could not establish connection to Vercel Database Environment Variables. Check your DB_HOST, DB_NAME, DB_PORT etc.';
+                }
+            } catch (Exception $e) {
                 $error = 'Database connection failed: ' . $e->getMessage();
             }
             break;
@@ -104,7 +84,7 @@ class Database {
             break;
             
         case 4: // Finalize setup
-            file_put_contents(__DIR__ . '/../config/setup_complete.txt', date('Y-m-d H:i:s'));
+            // setup_complete.txt cannot be written on Vercel Read-Only file system
             $success = 'Setup completed successfully! You can now access the system.';
             $step = 5;
             break;
@@ -194,31 +174,14 @@ class Database {
                 
                 <?php if ($step == 1): ?>
                     <!-- Step 1: Database Configuration -->
-                    <h4>Step 1: Database Configuration</h4>
-                    <p class="text-muted">Configure your MySQL database connection.</p>
+                    <h4>Step 1: Cloud Database Verification</h4>
+                    <p class="text-muted">Your remote database connection is pre-configured via Vercel Environment Variables.</p>
                     
                     <form method="POST">
-                        <div class="mb-3">
-                            <label for="db_host" class="form-label">Database Host</label>
-                            <input type="text" class="form-control" id="db_host" name="db_host" value="localhost" required>
+                        <div class="alert alert-info py-2">
+                            <i class="fas fa-cloud me-2"></i> Environment Variables securely loaded.
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="db_name" class="form-label">Database Name</label>
-                            <input type="text" class="form-control" id="db_name" name="db_name" value="urban_farming" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="db_username" class="form-label">Database Username</label>
-                            <input type="text" class="form-control" id="db_username" name="db_username" value="root" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="db_password" class="form-label">Database Password</label>
-                            <input type="password" class="form-control" id="db_password" name="db_password">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-blue-color w-100">Test Connection & Continue</button>
+                        <button type="submit" class="btn btn-blue-color w-100">Verify Connection & Continue</button>
                     </form>
                     
                 <?php elseif ($step == 2): ?>
