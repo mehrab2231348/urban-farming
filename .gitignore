@@ -1,0 +1,25 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Setup completion marker
+api/config/setup_complete.txt
+
+# Node modules (if any added later)
+node_modules/
+
+# Logs
+*.log

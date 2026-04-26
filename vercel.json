@@ -1,0 +1,76 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
+  },
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/login.html",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/index.html",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/api/(.*\\.php)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(login|register|logout|setup)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(farmer_dashboard|planner_dashboard|admin_dashboard)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(farm_requests|farm_approvals|create_farm|view_farm)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(drone_requests|drone_approvals|drone_inventory|request_drone)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(get_drone_details|get_drone_history|get_drone_results|farmer_drone_results|auto_drone_results)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(iot_monitoring|iot_analytics|iot_control)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(marketplace|sell_seeds|my_listings|seed_approvals|purchase_history)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(ai_recommendations|green_points|admin_green_points|admin_farm_management)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/(global_monitoring|user_management|system_logs|profile|notifications|get_notifications)\\.php",
+      "dest": "/api/$1.php"
+    },
+    {
+      "src": "/index\\.php",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "env": {
+    "DB_HOST": "@db_host",
+    "DB_NAME": "@db_name",
+    "DB_USERNAME": "@db_username",
+    "DB_PASSWORD": "@db_password"
+  }
+}
