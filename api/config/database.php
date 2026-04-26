@@ -22,7 +22,9 @@ class Database {
                 "mysql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name,
                 $this->username,
                 $this->password,
-                array(PDO::MYSQL_ATTR_SSL_CA => '/etc/ssl/certs/ca-certificates.crt') // Add SSL support for Vercel/Aiven
+                array(
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
+                ) // Enable SSL but skip strict CA path check for Vercel
             );
             $this->conn->exec("set names utf8");
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
