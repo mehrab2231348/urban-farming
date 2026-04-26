@@ -45,8 +45,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $database = new Database();
                 $db = $database->getConnection();
                 
-                $schema = file_get_contents(__DIR__ . '/../../database/schema.sql');
-                $db->exec($schema);
+                $schema_path = __DIR__ . '/schema.sql';
+                if (!file_exists($schema_path)) {
+                    throw new Exception("Schema file not found at $schema_path");
+                }
+                
+                $schema = file_get_contents($schema_path);
+                if (empty(trim($schema))) {
+                    throw new Exception("Schema file is empty");
+                }
+                
+                // Aiven allows multiple queries in one exec() if NO CREATE DATABASE statements exist
+                $result = $db->exec($schema);
+                
+                if ($result === false) {
+                    $errorInfo = $db->errorInfo();
+                    throw new Exception("Execution failed: " . ($errorInfo[2] ?? 'Unknown SQL error'));
+                }
                 
                 $success = 'Database schema imported successfully!';
                 $step = 3;
