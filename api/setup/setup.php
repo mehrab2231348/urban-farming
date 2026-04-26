@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h4>Step 1: Cloud Database Verification</h4>
                     <p class="text-muted">Your remote database connection is pre-configured via Vercel Environment Variables.</p>
                     
-                    <form method="POST">
+                    <form method="POST" action="?step=<?php echo $step; ?>">
                         <div class="alert alert-info py-2">
                             <i class="fas fa-cloud me-2"></i> Environment Variables securely loaded.
                         </div>
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h4>Step 2: Database Schema</h4>
                     <p class="text-muted">Import the database schema to create all necessary tables.</p>
                     
-                    <form method="POST">
+                    <form method="POST" action="?step=<?php echo $step; ?>">
                         <button type="submit" class="btn btn-blue-color w-100">Import Database Schema</button>
                     </form>
                     
@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h4>Step 3: Admin Account</h4>
                     <p class="text-muted">Create the administrator account for system management.</p>
                     
-                    <form method="POST">
+                    <form method="POST" action="?step=<?php echo $step; ?>">
                         <div class="mb-3">
                             <label for="admin_username" class="form-label">Admin Username</label>
                             <input type="text" class="form-control" id="admin_username" name="admin_username" value="admin" required>
@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h4>Step 4: Finalize Setup</h4>
                     <p class="text-muted">Complete the setup process.</p>
                     
-                    <form method="POST">
+                    <form method="POST" action="?step=<?php echo $step; ?>">
                         <button type="submit" class="btn btn-success w-100">Complete Setup</button>
                     </form>
                     
