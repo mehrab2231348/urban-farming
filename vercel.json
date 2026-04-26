@@ -66,11 +66,5 @@
       "src": "/public/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "DB_HOST": "@db_host",
-    "DB_NAME": "@db_name",
-    "DB_USERNAME": "@db_username",
-    "DB_PASSWORD": "@db_password"
-  }
+  ]
 }
